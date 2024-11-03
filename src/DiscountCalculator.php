@@ -2,17 +2,20 @@
 
 namespace Ale\DesignPattern;
 
+use Ale\DesignPattern\Discounts\MoreThan500ValueDiscount;
+use Ale\DesignPattern\Discounts\MoreThan5ItemsDiscount;
+use Ale\DesignPattern\Discounts\NoDiscount;
+
 class DiscountCalculator
 {
     public function calculateDiscount(Budget $budget): float
     {
-        if ($budget->itemsQuantity > 5) {
-            return $budget->value * 0.1;
-        }
+        $discountChain = new MoreThan5ItemsDiscount(
+            new MoreThan500ValueDiscount(
+                new NoDiscount()
+            )
+        );
 
-        if ($budget->value > 500) {
-            return $budget->value * 0.05;
-        }
-        return 0;
+        return $discountChain->calculateDiscount($budget);
     }
 }
